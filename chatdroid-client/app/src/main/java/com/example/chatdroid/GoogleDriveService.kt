@@ -185,8 +185,8 @@ class GoogleDriveService(private val context: Context) {
         foundFile?.id
     }
     
-    suspend fun loadSheetsContent(fileId: String): List<String> = withContext(Dispatchers.IO) {
-        val contentList = mutableListOf<String>()
+    suspend fun loadSheetsContent(fileId: String): List<SheetContent> = withContext(Dispatchers.IO) {
+        val contentList = mutableListOf<SheetContent>()
         try {
             // Get all sheet names first
             val spreadsheet = sheetsService?.spreadsheets()?.get(fileId)?.execute()
@@ -200,20 +200,32 @@ class GoogleDriveService(private val context: Context) {
             
             val values = response?.getValues()
             if (values != null && values.size > 1) {
-                // Skip the first row (header) and find CONTENT column
+                // Skip the first row (header) and find CONTENT and TIMESTAMP columns
                 val headerRow = values[0]
                 val contentColumnIndex = headerRow.indexOfFirst { 
                     it.toString().uppercase() == "CONTENT" 
                 }
+                val timestampColumnIndex = headerRow.indexOfFirst { 
+                    it.toString().uppercase() == "TIMESTAMP" 
+                }
+                
+                Log.d("ChatDroid", "Column indices - CONTENT: $contentColumnIndex, TIMESTAMP: $timestampColumnIndex")
                 
                 if (contentColumnIndex >= 0) {
-                    // Extract content from the CONTENT column, skipping header row
+                    // Extract content and timestamp, skipping header row
                     for (i in 1 until values.size) {
                         val row = values[i]
                         if (contentColumnIndex < row.size) {
                             val content = row[contentColumnIndex]?.toString()
+                            val timestamp = if (timestampColumnIndex >= 0 && timestampColumnIndex < row.size) {
+                                row[timestampColumnIndex]?.toString()
+                            } else {
+                                null
+                            }
+                            
                             if (!content.isNullOrEmpty()) {
-                                contentList.add(content)
+                                contentList.add(SheetContent(content, timestamp))
+                                Log.d("ChatDroid", "Added content: '$content' with timestamp: '$timestamp'")
                             }
                         }
                     }
@@ -241,4 +253,9 @@ data class DriveFile(
     val name: String,
     val mimeType: String,
     val modifiedTime: String
+)
+
+data class SheetContent(
+    val content: String,
+    val timestamp: String?
 )

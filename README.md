@@ -1,3 +1,10 @@
+# Project using:
+Android Sdk 14; Api: 34
+Emulator Platform Tools 36
+Emulator 36
+Emulated Device: Pixel 5
+
+
 # Using this accoount as test user. When neede, sign in with this account in siumulator Pixel5
 danson66house@gmail.com
 namaiNa*****i@77

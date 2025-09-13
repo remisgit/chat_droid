@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         sendButton.setOnClickListener {
             val messageText = messageInput.text.toString().trim()
             if (messageText.isNotEmpty()) {
-                val message = ChatMessage(messageText, true)
+                val message = ChatMessage(messageText, true, null)
                 messages.add(message)
                 chatAdapter.notifyItemInserted(messages.size - 1)
                 chatRecyclerView.scrollToPosition(messages.size - 1)
@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d("ChatDroid", "Searching for file 'Chat' in path: /dev/CHATDROID/")
                 
                 // Add loading message
-                val loadingMessage = ChatMessage("Loading chat data from Google Sheets...", false)
+                val loadingMessage = ChatMessage("Loading chat data from Google Sheets...", false, null)
                 messages.add(loadingMessage)
                 chatAdapter.notifyItemInserted(messages.size - 1)
                 chatRecyclerView.scrollToPosition(messages.size - 1)
@@ -144,16 +144,16 @@ class MainActivity : AppCompatActivity() {
                     chatAdapter.notifyItemRemoved(messages.size)
                     
                     if (contentList.isNotEmpty()) {
-                        // Add each content item as a chat message
-                        contentList.forEach { content ->
-                            val message = ChatMessage(content, false)
+                        // Add each content item as a chat message with timestamp
+                        contentList.forEach { sheetContent ->
+                            val message = ChatMessage(sheetContent.content, false, sheetContent.timestamp)
                             messages.add(message)
                             chatAdapter.notifyItemInserted(messages.size - 1)
                         }
                         chatRecyclerView.scrollToPosition(messages.size - 1)
                         Toast.makeText(this@MainActivity, "Loaded ${contentList.size} messages from Google Sheets", Toast.LENGTH_SHORT).show()
                     } else {
-                        val noContentMessage = ChatMessage("No content found in CONTENT column", false)
+                        val noContentMessage = ChatMessage("No content found in CONTENT column", false, null)
                         messages.add(noContentMessage)
                         chatAdapter.notifyItemInserted(messages.size - 1)
                     }
@@ -162,7 +162,7 @@ class MainActivity : AppCompatActivity() {
                     messages.removeAt(messages.size - 1)
                     chatAdapter.notifyItemRemoved(messages.size)
                     
-                    val errorMessage = ChatMessage("Chat file not found in /dev/CHATDROID/ folder", false)
+                    val errorMessage = ChatMessage("Chat file not found in /dev/CHATDROID/ folder", false, null)
                     messages.add(errorMessage)
                     chatAdapter.notifyItemInserted(messages.size - 1)
                 }
