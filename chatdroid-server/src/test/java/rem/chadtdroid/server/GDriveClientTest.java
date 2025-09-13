@@ -4,9 +4,6 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -19,20 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-class GDriveClientTest {
-
-    @Mock
-    private Drive mockDriveService;
-    
-    @Mock
-    private Drive.Files mockFiles;
-    
-    @Mock
-    private Drive.Files.List mockFilesList;
+public class GDriveClientTest {
 
     @Test
     void testListFiles() throws IOException, GeneralSecurityException {
+        Drive mockDriveService = mock(Drive.class);
+        Drive.Files mockFiles = mock(Drive.Files.class);
+        Drive.Files.List mockFilesList = mock(Drive.Files.List.class);
+        
         Map<String, String> params = new HashMap<>();
         params.put(GDriveClient.SERVICE_ACCOUNT_KEY, createMockServiceAccountKey());
         params.put(GDriveClient.TARGET_FOLDER_ID, "test-folder-id");
